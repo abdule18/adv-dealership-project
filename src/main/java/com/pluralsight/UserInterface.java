@@ -41,6 +41,8 @@ public class UserInterface {
                         "7. Get All Vehicles\n" +
                         "8. Add Vehicle\n" +
                         "9. Remove Vehicle\n" +
+                        "10. Sale Vehicle\n" +
+                        "11. Lease Vehicle\n" +
                         "0. Exit\n";
         int option;
         do {
@@ -74,6 +76,12 @@ public class UserInterface {
                 case 9:
                     processRemoveVehicleRequest();
                     break;
+                case 10:
+                    processSellingVehicleRequest();
+                    break;
+                case 11:
+                    processLeasingVehicleRequest();
+                    break;
                 case 0:
                     System.out.println("Exiting!");
                     break;
@@ -83,6 +91,15 @@ public class UserInterface {
             }
 
         } while (option != 0);
+    }
+
+    public void processNewContract(){
+
+        //figured out is this a lease or a sale?
+        // ask for date, name, email, to select vehicle by vin.
+            //if sale
+                //figure out if should be financed y/n
+
     }
 
     public void processGetByPriceRequest() {
@@ -151,5 +168,79 @@ public class UserInterface {
         } else {
             System.out.println("Vehicle with VIN " + vin + " not found.");
         }
+    }
+
+    public void processSellingVehicleRequest(){
+        System.out.println("========== SELLING A VEHICLE ==========");
+        String date = console.promptForString("Enter Date: ");
+        String customerName = console.promptForString("Enter Name: ");
+        String customerEmail = console.promptForString("Enter Email: ");
+        int vehicleVin = console.promptForInt("Enter Vin: ");
+
+        Vehicle v = dealership.findVehicleByVin(vehicleVin);
+
+        if (v ==  null){
+            System.out.println("Vehicle not found!");
+            return;
+        }
+
+        // 2️⃣ Prompt for additional sales information
+        double salesTax = console.promptForDouble("Enter Sales Tax: ");
+        double recordingFee = console.promptForDouble("Enter Recording Fee: ");
+        double processingFee = console.promptForDouble("Enter Processing Fee: ");
+        boolean finance = console.promptForString("Is the vehicle financed? (yes/no): ").equalsIgnoreCase("yes");
+
+        SalesContract salesContract = new SalesContract(
+                date,
+                customerName,
+                customerEmail,
+                v,
+                salesTax,
+                recordingFee,
+                processingFee,
+                finance
+        );
+
+        ContractDataManager manager1 = new ContractDataManager();
+        manager1.saveContract(salesContract);
+
+        dealership.removeVehicle(v);
+
+        manager.saveDealership(dealership);
+
+        System.out.println("Vehicle sold and contract saved successfully!");
+
+
+
+    }
+
+    public void processLeasingVehicleRequest(){
+        System.out.println("========== SELLING A VEHICLE ==========");
+        String date = console.promptForString("Enter Date: ");
+        String customerName = console.promptForString("Enter Name: ");
+        String customerEmail = console.promptForString("Enter Email: ");
+        int vehicleVin = console.promptForInt("Enter Vin: ");
+
+        Vehicle v = dealership.findVehicleByVin(vehicleVin);
+
+        if (v ==  null){
+            System.out.println("Vehicle not found!");
+            return;
+        }
+
+        LeaseContract leaseContract = new LeaseContract(
+                date,
+                customerName,
+                customerEmail,
+                v
+        );
+
+        ContractDataManager manager1 = new ContractDataManager();
+        manager1.saveContract(leaseContract);
+
+        dealership.removeVehicle(v);
+        manager.saveDealership(dealership);
+
+        System.out.println("Vehicle sold and contract saved successfully!");
     }
 }

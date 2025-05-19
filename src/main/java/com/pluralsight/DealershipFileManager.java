@@ -63,7 +63,7 @@ public class DealershipFileManager {
         String vehicleType =  parts[4].trim();
         String color = parts[5].trim();
         int odometer = Integer.parseInt(parts[6].trim());
-        double price = Double.parseDouble(parts[7].trim());
+        double price = Double.parseDouble(parts[7].trim().replace("$", "").replace(",", ""));
         return new Vehicle(vin, year, make, model, vehicleType, color, odometer, price);
     }
 
